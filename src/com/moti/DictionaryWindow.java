@@ -129,12 +129,16 @@ public class DictionaryWindow extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String term = JOptionPane.showInputDialog(null, "Enter term:");
-                if (_dictionary.is_term_exists(term)) {
+                if (null == term || _dictionary.is_term_exists(term)) {
                     JOptionPane.showMessageDialog(null, "Term already exists");
                     return;
                 }
 
                 String explanation = JOptionPane.showInputDialog(null, "Enter explanation:");
+                if (null == explanation) {
+                    JOptionPane.showMessageDialog(null, "Empty explanation");
+                    return;
+                }
 
                 try {
                     _dictionary.add_term(term, explanation);
@@ -153,12 +157,16 @@ public class DictionaryWindow extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String term = JOptionPane.showInputDialog(null, "Enter term:");
-                if (!_dictionary.is_term_exists(term)) {
+                if (null == term || !_dictionary.is_term_exists(term)) {
                     JOptionPane.showMessageDialog(null, "Term not exists");
                     return;
                 }
 
                 String explanation = JOptionPane.showInputDialog(null, "Enter new explanation:");
+                if (null == explanation) {
+                    JOptionPane.showMessageDialog(null, "Empty explanation");
+                    return;
+                }
 
                 try {
                     _dictionary.update_term(term, explanation);
@@ -177,7 +185,7 @@ public class DictionaryWindow extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String term = JOptionPane.showInputDialog(null, "Enter term:");
-                if (!_dictionary.is_term_exists(term)) {
+                if (null == term || !_dictionary.is_term_exists(term)) {
                     JOptionPane.showMessageDialog(null, "Term not exists");
                     return;
                 }
