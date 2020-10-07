@@ -57,13 +57,32 @@ public class Dictionary implements Iterable<Map.Entry<String, String>> {
         _dictionary.put(term, explanation);
     }
 
-    public void delete_term(String term) throws TermNotExistsException {
+    public void remove_term(String term) throws TermNotExistsException {
         if (!_dictionary.containsKey(term)) {
             throw new TermNotExistsException(term);
         }
 
         // Delete existing term in the dictionary
         _dictionary.remove(term);
+    }
+
+    public Map.Entry<String, String> get_term(String term) throws TermNotExistsException {
+        if (!_dictionary.containsKey(term)) {
+            throw new TermNotExistsException(term);
+        }
+
+        // Delete existing term in the dictionary
+        for (Map.Entry<String, String> e : _dictionary.entrySet()) {
+            if (term.equalsIgnoreCase(e.getKey())) {
+                return e;
+            }
+        }
+
+        throw new TermNotExistsException(term);
+    }
+
+    public boolean is_term_exists(String term) {
+        return _dictionary.containsKey(term);
     }
 
     public void write_to_file(FileWriter file) throws IOException {
