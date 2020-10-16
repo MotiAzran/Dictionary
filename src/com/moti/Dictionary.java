@@ -3,18 +3,29 @@ package com.moti;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
-import java.util.function.Consumer;
 
+/**
+ * Represent a word dictionary
+ */
 public class Dictionary implements Iterable<Map.Entry<String, String>> {
-
     private TreeMap<String, String> _dictionary;
 
+    /**
+     * Initialize empty dictionary
+     */
     public Dictionary() {
         _dictionary = new TreeMap<>();
     }
 
-    public static Dictionary create_dictionary_from_file(Scanner dictionary_file) throws IllegalArgumentException {
-
+    /**
+     * Create dictionary from file.
+     * The file format is that each line contains
+     * <term>,<explanation>
+     * @param dictionary_file where to get the dictionary input
+     * @return Dictionary initialized from the file
+     * @throws IllegalArgumentException thrown when the file is with invalid format
+     */
+    public static Dictionary createDictionaryFromFile(Scanner dictionary_file) throws IllegalArgumentException {
         Dictionary dictionary = new Dictionary();
 
         while (dictionary_file.hasNext()) {
@@ -28,9 +39,8 @@ public class Dictionary implements Iterable<Map.Entry<String, String>> {
             }
 
             String explanation = line.substring(comma_index + 1);
-
             try {
-                dictionary.add_term(term, explanation);
+                dictionary.addTerm(term, explanation);
             } catch (TermExistsException e) {
                 throw new IllegalArgumentException("Invalid file format");
             }
@@ -39,7 +49,13 @@ public class Dictionary implements Iterable<Map.Entry<String, String>> {
         return dictionary;
     }
 
-    public void add_term(String term, String explanation) throws TermExistsException {
+    /**
+     * Add term to the dictionary
+     * @param term term to add
+     * @param explanation term explanation
+     * @throws TermExistsException The term already exists
+     */
+    public void addTerm(String term, String explanation) throws TermExistsException {
         if (_dictionary.containsKey(term)) {
             throw new TermExistsException(term);
         }
@@ -48,7 +64,13 @@ public class Dictionary implements Iterable<Map.Entry<String, String>> {
         _dictionary.put(term, explanation);
     }
 
-    public void update_term(String term, String explanation) throws TermNotExistsException {
+    /**
+     * Update existing dictionary term
+     * @param term term to update
+     * @param explanation new explanation
+     * @throws TermNotExistsException thrown when the term not exists
+     */
+    public void updateTerm(String term, String explanation) throws TermNotExistsException {
         if (!_dictionary.containsKey(term)) {
             throw new TermNotExistsException(term);
         }
@@ -57,7 +79,12 @@ public class Dictionary implements Iterable<Map.Entry<String, String>> {
         _dictionary.put(term, explanation);
     }
 
-    public void remove_term(String term) throws TermNotExistsException {
+    /**
+     * Remove existing term
+     * @param term term to remove
+     * @throws TermNotExistsException thrown when the term not exists
+     */
+    public void removeTerm(String term) throws TermNotExistsException {
         if (!_dictionary.containsKey(term)) {
             throw new TermNotExistsException(term);
         }
@@ -66,32 +93,51 @@ public class Dictionary implements Iterable<Map.Entry<String, String>> {
         _dictionary.remove(term);
     }
 
-    public Map.Entry<String, String> get_term(String term) throws TermNotExistsException {
+    /**
+     * Get term element, get the term and it's explanation
+     * @param term term to get
+     * @return term and it's explanation
+     * @throws TermNotExistsException throw when the requested term isn't exists
+     */
+    public Map.Entry<String, String> getTerm(String term) throws TermNotExistsException {
         if (!_dictionary.containsKey(term)) {
             throw new TermNotExistsException(term);
         }
 
         // Delete existing term in the dictionary
-        for (Map.Entry<String, String> e : _dictionary.entrySet()) {
-            if (term.equalsIgnoreCase(e.getKey())) {
-                return e;
+        for (Map.Entry<String, String> entry : _dictionary.entrySet()) {
+            if (term.equalsIgnoreCase(entry.getKey())) {
+                return entry;
             }
         }
 
         throw new TermNotExistsException(term);
     }
 
-    public boolean is_term_exists(String term) {
+    /**
+     * Checks if term exists
+     * @param term term to search
+     * @return true if the term exists, otherwise false
+     */
+    public boolean isTermExists(String term) {
         return _dictionary.containsKey(term);
     }
 
-    public void write_to_file(FileWriter file) throws IOException {
-
-        for (Map.Entry<String, String> e : _dictionary.entrySet()) {
-            file.write(String.format("%s,%s\n", e.getKey(), e.getValue()));
+    /**
+     * Export dictionary to file
+     * @param file File to export the file
+     * @throws IOException thrown in case of file error
+     */
+    public void exportToFile(FileWriter file) throws IOException {
+        for (Map.Entry<String, String> entry : _dictionary.entrySet()) {
+            file.write(String.format("%s,%s\n", entry.getKey(), entry.getValue()));
         }
     }
 
+    /**
+     * Implement dictionary iterator
+     * @return iterator to dictionary items
+     */
     @Override
     public Iterator<Map.Entry<String, String>> iterator() {
         return _dictionary.entrySet().iterator();
