@@ -7,33 +7,33 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Map;
 import java.util.Scanner;
 
 /**
  * Implement the main window of the program
  */
 public class DictionaryWindow extends JFrame {
+    private final int SEARCH_FIELD_HEIGHT = 30;
     private final int SEARCH_PANEL_HEIGHT = 50;
     private final int TEXT_AREA_HEIGHT = 400;
     private final int BUTTONS_PANEL_HEIGHT = 50;
     private final int FRAME_HEIGHT = SEARCH_PANEL_HEIGHT + TEXT_AREA_HEIGHT + BUTTONS_PANEL_HEIGHT;
     private final int FRAME_WIDTH = 600;
-    private Dictionary _dictionary;
-    private JMenuBar _menuBar;
-    private JMenu _fileMenu;
-    private JMenuItem _importMenuItem;
-    private JMenuItem _exportMenuItem;
-    private JMenuItem _closeMenuItem;
-    private JPanel _searchPanel;
-    private JTextField _searchField;
-    private JButton _searchButton;
-    private JScrollPane _scrollDictionary;
-    private JTextArea _dictionaryText;
-    private JPanel _buttonsPanel;
-    private JButton _addButton;
-    private JButton _updateButton;
-    private JButton _removeButton;
+    private Dictionary dictionary;
+    private JMenuBar bar;
+    private JMenu fileMenu;
+    private JMenuItem importMenuItem;
+    private JMenuItem exportMenuItem;
+    private JMenuItem closeMenuItem;
+    private JPanel searchPanel;
+    private JTextField searchField;
+    private JButton searchButton;
+    private JScrollPane scrollDictionary;
+    private JTextArea dictionaryText;
+    private JPanel buttonsPanel;
+    private JButton addButton;
+    private JButton updateButton;
+    private JButton removeButton;
 
     /**
      * Initialize window
@@ -43,98 +43,98 @@ public class DictionaryWindow extends JFrame {
         setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
         setSize(FRAME_WIDTH, FRAME_HEIGHT);
 
-        _dictionary = new Dictionary();
+        dictionary = new Dictionary();
 
-        _initMenu();
-        _initSearchPanel();
-        _initTextArea();
+        initMenu();
+        initSearchPanel();
+        initTextArea();
         initButtonsPanel();
 
-        setJMenuBar(_menuBar);
-        add(_searchPanel);
-        add(_scrollDictionary);
-        add(_buttonsPanel);
+        setJMenuBar(bar);
+        add(searchPanel);
+        add(scrollDictionary);
+        add(buttonsPanel);
     }
 
     /**
      * Init window menu
      */
-    private void _initMenu() {
-        _menuBar = new JMenuBar();
+    private void initMenu() {
+        bar = new JMenuBar();
 
         // Add file menu
-        _fileMenu = new JMenu("File");
-        _fileMenu.setMnemonic('F');
+        fileMenu = new JMenu("File");
+        fileMenu.setMnemonic('F');
 
         // Add import option to file menu
-        _importMenuItem = new JMenuItem("Import Dictionary");
-        _importMenuItem.addActionListener(new MenuItemActionListener());
-        _fileMenu.add(_importMenuItem);
+        importMenuItem = new JMenuItem("Import Dictionary");
+        importMenuItem.addActionListener(new MenuItemActionListener());
+        fileMenu.add(importMenuItem);
 
         // Add export option to menu
-        _exportMenuItem = new JMenuItem("Export Dictionary");
-        _exportMenuItem.addActionListener(new MenuItemActionListener());
-        _fileMenu.add(_exportMenuItem);
+        exportMenuItem = new JMenuItem("Export Dictionary");
+        exportMenuItem.addActionListener(new MenuItemActionListener());
+        fileMenu.add(exportMenuItem);
 
         // Add close option to file menu
-        _closeMenuItem = new JMenuItem("Close");
-        _closeMenuItem.addActionListener(new MenuItemActionListener());
-        _fileMenu.add(_closeMenuItem);
+        closeMenuItem = new JMenuItem("Close");
+        closeMenuItem.addActionListener(new MenuItemActionListener());
+        fileMenu.add(closeMenuItem);
 
-        _menuBar.add(_fileMenu);
+        bar.add(fileMenu);
     }
 
     /**
      * Initialize the window search panel
      */
-    private void _initSearchPanel() {
-        _searchPanel = new JPanel();
-        _searchPanel.setLayout(new FlowLayout());
-        _searchPanel.setPreferredSize(new Dimension(FRAME_WIDTH, SEARCH_PANEL_HEIGHT));
+    private void initSearchPanel() {
+        searchPanel = new JPanel();
+        searchPanel.setLayout(new FlowLayout());
+        searchPanel.setPreferredSize(new Dimension(FRAME_WIDTH, SEARCH_PANEL_HEIGHT));
 
         // Add search field
-        _searchField = new JTextField();
-        _searchField.setPreferredSize(new Dimension(300, 30));
-        _searchPanel.add(_searchField);
+        searchField = new JTextField();
+        searchField.setPreferredSize(new Dimension(FRAME_WIDTH / 2, SEARCH_FIELD_HEIGHT));
+        searchPanel.add(searchField);
 
         // Add search button
-        _searchButton = new JButton("Search");
-        _searchButton.addActionListener(new ActionListener() {
+        searchButton = new JButton("Search");
+        searchButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String msg = "";
                 try {
-                    String term = _searchField.getText();
-                    Map.Entry<String, String> dic_term = _dictionary.getTerm(term);
-                    msg = String.format("%s - %s", dic_term.getKey(), dic_term.getValue());
+                    String term = searchField.getText();
+                    Term dictionaryTerm = dictionary.getTerm(term);
+                    msg = dictionaryTerm.toString();
                 } catch (TermNotExistsException exp) {
                     msg = exp.getMessage();
                 }
 
-                JOptionPane.showMessageDialog(null, msg);
+                JOptionPane.showMessageDialog(DictionaryWindow.this, msg);
             }
         });
 
-        _searchPanel.add(_searchButton);
+        searchPanel.add(searchButton);
     }
 
     /**
      * Initialize dictionary text area
      */
-    private void _initTextArea() {
+    private void initTextArea() {
         // Create text area
-        _dictionaryText = new JTextArea();
-        _dictionaryText.setPreferredSize(new Dimension(FRAME_WIDTH, TEXT_AREA_HEIGHT));
-        _dictionaryText.setMaximumSize(new Dimension(FRAME_WIDTH, TEXT_AREA_HEIGHT));
-        _dictionaryText.setEditable(false);
+        dictionaryText = new JTextArea();
+        dictionaryText.setPreferredSize(new Dimension(FRAME_WIDTH, TEXT_AREA_HEIGHT));
+        dictionaryText.setMaximumSize(new Dimension(FRAME_WIDTH, TEXT_AREA_HEIGHT));
+        dictionaryText.setEditable(false);
 
         // Add dictionary data to text area
-        _resetTextArea();
+        resetTextArea();
 
         // Make the area scrollable
-        _scrollDictionary = new JScrollPane(_dictionaryText);
-        _scrollDictionary.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-        _scrollDictionary.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        scrollDictionary = new JScrollPane(dictionaryText);
+        scrollDictionary.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scrollDictionary.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
     }
 
     /**
@@ -144,112 +144,35 @@ public class DictionaryWindow extends JFrame {
      *  - remove
      */
     private void initButtonsPanel() {
-        _buttonsPanel = new JPanel();
-        _buttonsPanel.setLayout(new FlowLayout());
-        _buttonsPanel.setPreferredSize(new Dimension(FRAME_WIDTH, BUTTONS_PANEL_HEIGHT));
+        buttonsPanel = new JPanel();
+        buttonsPanel.setLayout(new FlowLayout());
+        buttonsPanel.setPreferredSize(new Dimension(FRAME_WIDTH, BUTTONS_PANEL_HEIGHT));
 
         // Add "add button"
-        _addButton = new JButton("Add term");
-        _addButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // Get term from user
-                String term = JOptionPane.showInputDialog(null, "Enter term:");
-                if (null == term || _dictionary.isTermExists(term)) {
-                    JOptionPane.showMessageDialog(null, "Term already exists");
-                    return;
-                }
-
-                // Get term explanation from user
-                String explanation = JOptionPane.showInputDialog(null, "Enter explanation:");
-                if (null == explanation) {
-                    JOptionPane.showMessageDialog(null, "Empty explanation");
-                    return;
-                }
-
-                // Add user term to dictionary
-                try {
-                    _dictionary.addTerm(term, explanation);
-                } catch(TermExistsException exp) {
-                    JOptionPane.showMessageDialog(null, exp.getMessage());
-                    return;
-                }
-
-                // Show new term to window
-                _resetTextArea();
-            }
-        });
-        _buttonsPanel.add(_addButton);
+        addButton = new JButton("Add term");
+        addButton.addActionListener(new ControlButtonsActionListener());
+        buttonsPanel.add(addButton);
 
         // Add update button
-        _updateButton = new JButton("Update term");
-        _updateButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // Get term from user
-                String term = JOptionPane.showInputDialog(null, "Enter term:");
-                if (null == term || !_dictionary.isTermExists(term)) {
-                    JOptionPane.showMessageDialog(null, "Term not exists");
-                    return;
-                }
-
-                // Get new explanation from user
-                String explanation = JOptionPane.showInputDialog(null, "Enter new explanation:");
-                if (null == explanation) {
-                    JOptionPane.showMessageDialog(null, "Empty explanation");
-                    return;
-                }
-
-                // Update term
-                try {
-                    _dictionary.updateTerm(term, explanation);
-                } catch(TermNotExistsException exp) {
-                    JOptionPane.showMessageDialog(null, exp.getMessage());
-                    return;
-                }
-
-                // Show updated dictionary
-                _resetTextArea();
-            }
-        });
-        _buttonsPanel.add(_updateButton);
+        updateButton = new JButton("Update term");
+        updateButton.addActionListener(new ControlButtonsActionListener());
+        buttonsPanel.add(updateButton);
 
         // Add remove button
-        _removeButton = new JButton("Remove term");
-        _removeButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // Get term from user
-                String term = JOptionPane.showInputDialog(null, "Enter term:");
-                if (null == term || !_dictionary.isTermExists(term)) {
-                    JOptionPane.showMessageDialog(null, "Term not exists");
-                    return;
-                }
-
-                // Remove term from dictionary
-                try {
-                    _dictionary.removeTerm(term);
-                } catch(TermNotExistsException exp) {
-                    JOptionPane.showMessageDialog(null, exp.getMessage());
-                    return;
-                }
-
-                // Show new dictionary
-                _resetTextArea();
-            }
-        });
-        _buttonsPanel.add(_removeButton);
+        removeButton = new JButton("Remove term");
+        removeButton.addActionListener(new ControlButtonsActionListener());
+        buttonsPanel.add(removeButton);
     }
 
     /**
      * Write dictionary to text area
      */
-    private void _resetTextArea() {
-        _dictionaryText.setText("");
+    private void resetTextArea() {
+        dictionaryText.setText("");
 
         // Write all terms to the text area
-        for (Map.Entry<String, String> term : _dictionary) {
-            _dictionaryText.append(String.format("%s - %s\n", term.getKey(), term.getValue()));
+        for (Term term : dictionary) {
+            dictionaryText.append(String.format("%s\n\n", term));
         }
     }
 
@@ -259,7 +182,7 @@ public class DictionaryWindow extends JFrame {
     private class MenuItemActionListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            if (_closeMenuItem.equals(e.getSource())) {
+            if (closeMenuItem.equals(e.getSource())) {
                 // Close option chosen
                 System.exit(0);
             }
@@ -267,41 +190,41 @@ public class DictionaryWindow extends JFrame {
             JFileChooser dictionaryFileChooser = new JFileChooser();
             dictionaryFileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 
-            if (_importMenuItem.equals(e.getSource())) {
+            if (importMenuItem.equals(e.getSource())) {
                 // Get file to import from
-                int res = dictionaryFileChooser.showOpenDialog(null);
+                int res = dictionaryFileChooser.showOpenDialog(DictionaryWindow.this);
                 if (JFileChooser.CANCEL_OPTION == res) {
                     return;
                 }
-            } else if (_exportMenuItem.equals(e.getSource())) {
+            } else if (exportMenuItem.equals(e.getSource())) {
                 // Get file to export to
-                int res = dictionaryFileChooser.showSaveDialog(null);
+                int res = dictionaryFileChooser.showSaveDialog(DictionaryWindow.this);
                 if (JFileChooser.CANCEL_OPTION == res) {
                     return;
                 }
             }
 
             // Get chosen file path
-            Path file_path = dictionaryFileChooser.getSelectedFile().toPath();
-            if (null == file_path) {
+            Path filePath = dictionaryFileChooser.getSelectedFile().toPath();
+            if (null == filePath) {
                 JOptionPane.showMessageDialog(null, "Invalid file",
                         "Error", JOptionPane.ERROR_MESSAGE);
             }
 
             try {
-                if (_importMenuItem.equals(e.getSource())) {
-                    if (!Files.exists(file_path)) {
+                if (importMenuItem.equals(e.getSource())) {
+                    if (!Files.exists(filePath)) {
                         JOptionPane.showMessageDialog(null, "File not found",
                                 "Error", JOptionPane.ERROR_MESSAGE);
                     }
 
                     // Import dictionary from file
-                    _dictionary = Dictionary.createDictionaryFromFile(new Scanner(file_path.toFile()));
-                    _resetTextArea();
-                } else if (_exportMenuItem.equals(e.getSource())) {
-                    FileWriter writer = new FileWriter(file_path.toFile());
+                    dictionary = Dictionary.createDictionaryFromFile(new Scanner(filePath.toFile()));
+                    resetTextArea();
+                } else if (exportMenuItem.equals(e.getSource())) {
+                    FileWriter writer = new FileWriter(filePath.toFile());
                     // Export dictionary to chosen file
-                    _dictionary.exportToFile(writer);
+                    dictionary.exportToFile(writer);
                     writer.close();
                 }
             } catch (FileNotFoundException exp) {
@@ -311,6 +234,114 @@ public class DictionaryWindow extends JFrame {
                 JOptionPane.showMessageDialog(null, exp.getMessage(),
                         "Error", JOptionPane.ERROR_MESSAGE);
             }
+        }
+    }
+
+    private class ControlButtonsActionListener implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            JButton btn = (JButton) e.getSource();
+
+            if (btn.equals(addButton)) {
+                handleAdd();
+            } else if (btn.equals(updateButton)) {
+                handleUpdate();
+            } else if (btn.equals(removeButton)) {
+                handleRemove();
+            }
+        }
+
+        private String showExplanationInputDialog() {
+            final JTextArea text = new JTextArea("", 20, 40);
+            JOptionPane pane = new JOptionPane(new Object[] { "Enter explanation:",
+                    new JScrollPane(text) }, JOptionPane.QUESTION_MESSAGE,
+                    JOptionPane.OK_CANCEL_OPTION);
+
+            pane.setWantsInput(false);
+            JDialog dialog = pane.createDialog(DictionaryWindow.this, "");
+            dialog.pack();
+            dialog.setVisible(true);
+            Integer value = (Integer) pane.getValue();
+            if (value == null || value == JOptionPane.CANCEL_OPTION
+                    || value == JOptionPane.CLOSED_OPTION) {
+                return "";
+            }
+
+            return text.getText();
+        }
+
+        private void handleAdd() {
+            // Get term from user
+            String term = JOptionPane.showInputDialog(DictionaryWindow.this, "Enter term:");
+            if (null == term || dictionary.isTermExists(term)) {
+                JOptionPane.showMessageDialog(DictionaryWindow.this, "Term already exists");
+                return;
+            }
+
+            String explanation = showExplanationInputDialog();
+            if (null == explanation || explanation.isEmpty()) {
+                JOptionPane.showMessageDialog(DictionaryWindow.this, "Empty explanation");
+                return;
+            }
+
+            // Add user term to dictionary
+            try {
+                dictionary.addTerm(term, explanation);
+            } catch(TermExistsException exp) {
+                JOptionPane.showMessageDialog(DictionaryWindow.this, exp.getMessage());
+                return;
+            }
+
+            // Show new term to window
+            resetTextArea();
+        }
+
+        private void handleUpdate() {
+            // Get term from user
+            String term = JOptionPane.showInputDialog(DictionaryWindow.this, "Enter term:");
+            if (null == term || !dictionary.isTermExists(term)) {
+                JOptionPane.showMessageDialog(DictionaryWindow.this, "Term not exists");
+                return;
+            }
+
+            // Get new explanation from user
+            String explanation = showExplanationInputDialog();
+            if (null == explanation || explanation.isEmpty()) {
+                JOptionPane.showMessageDialog(DictionaryWindow.this, "Empty explanation");
+                return;
+            }
+
+            // Update term
+            try {
+                dictionary.updateTerm(term, explanation);
+            } catch(TermNotExistsException exp) {
+                JOptionPane.showMessageDialog(DictionaryWindow.this, exp.getMessage());
+                return;
+            }
+
+            // Show updated dictionary
+            resetTextArea();
+        }
+
+        private void handleRemove() {
+            // Get term from user
+            String term = JOptionPane.showInputDialog(DictionaryWindow.this, "Enter term:");
+            if (null == term || !dictionary.isTermExists(term)) {
+                JOptionPane.showMessageDialog(DictionaryWindow.this, "Term not exists");
+                return;
+            }
+
+            // Remove term from dictionary
+            try {
+                dictionary.removeTerm(term);
+            } catch(TermNotExistsException exp) {
+                JOptionPane.showMessageDialog(DictionaryWindow.this, exp.getMessage());
+                return;
+            }
+
+            // Show new dictionary
+            resetTextArea();
         }
     }
 }
