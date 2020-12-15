@@ -1,5 +1,3 @@
-package com.moti;
-
 /**
  * Exception that thrown when program does
  * wrong action on term that not exists

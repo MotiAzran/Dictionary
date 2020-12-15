@@ -1,7 +1,6 @@
 /*
  * Moti Azran
  */
-package com.moti;
 
 import javax.swing.*;
 
