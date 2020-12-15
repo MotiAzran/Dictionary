@@ -3,7 +3,7 @@ import java.io.IOException;
 import java.util.*;
 
 /**
- * Represent a word dictionary
+ * Represent a words dictionary
  */
 public class Dictionary implements Iterable<Term> {
     private TreeSet<Term> dictionary;
@@ -56,7 +56,7 @@ public class Dictionary implements Iterable<Term> {
         String result = "";
         boolean isTermFound = false;
         while (dictionaryFile.hasNextLine()) {
-            result = dictionaryFile.nextLine();
+            result = result.concat(dictionaryFile.nextLine() + "\n");
             if (result.contains("<") && result.contains("</") && result.contains(">")) {
                 isTermFound = true;
                 break;
@@ -74,7 +74,7 @@ public class Dictionary implements Iterable<Term> {
             throw new IllegalArgumentException("Invalid file format");
         }
 
-        String explanation = result.substring(result.indexOf('>') + 1, result.indexOf("</"));
+        String explanation = result.substring(result.indexOf('>') + 1, result.indexOf("</")).trim();
 
         return new Term(term, explanation);
     }
