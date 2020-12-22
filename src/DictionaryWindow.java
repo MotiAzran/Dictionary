@@ -209,6 +209,7 @@ public class DictionaryWindow extends JFrame {
             if (null == filePath) {
                 JOptionPane.showMessageDialog(null, "Invalid file",
                         "Error", JOptionPane.ERROR_MESSAGE);
+                return;
             }
 
             try {
@@ -216,6 +217,7 @@ public class DictionaryWindow extends JFrame {
                     if (!Files.exists(filePath)) {
                         JOptionPane.showMessageDialog(null, "File not found",
                                 "Error", JOptionPane.ERROR_MESSAGE);
+                        return;
                     }
 
                     // Import dictionary from file
@@ -227,12 +229,18 @@ public class DictionaryWindow extends JFrame {
                     dictionary.exportToFile(writer);
                     writer.close();
                 }
+            } catch (IllegalArgumentException exp) {
+                JOptionPane.showMessageDialog(null, exp.getMessage(),
+                        "Error", JOptionPane.ERROR_MESSAGE);
+                return;
             } catch (FileNotFoundException exp) {
                 JOptionPane.showMessageDialog(null, "File not found",
                         "Error", JOptionPane.ERROR_MESSAGE);
+                return;
             } catch (IOException exp) {
                 JOptionPane.showMessageDialog(null, exp.getMessage(),
                         "Error", JOptionPane.ERROR_MESSAGE);
+                return;
             }
         }
     }

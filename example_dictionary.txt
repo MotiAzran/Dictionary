@@ -1,0 +1,6 @@
+<AAA>ZZZ</AAA>
+<AAB>ZZZ</AAB>
+<MultiLine>Multi
+lines
+explanation</MultiLine>
+<OneLine>expl</OneLine>
